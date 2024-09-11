@@ -15,7 +15,17 @@ SQL_DATA_INFO = [{
     "db_id_name": "db_id",
     "output_name": "query",
     "is_multiple_turn": False,
-}]
+},{
+    "data_source": "spider",
+    "train_file": ["train_spider.json","train_others.json"],
+    "dev_file": ["dev.json"],
+    "train_tables_file": "tables.json",
+    "dev_tables_file": "tables.json",
+    "db_id_name": "db_id",
+    "output_name": "query",
+    "is_multiple_turn": False,
+}
+]
 
 INSTRUCTION_PROMPT = """\
 I want you to act as a SQL terminal in front of an example database, \
@@ -34,17 +44,17 @@ ADAPTER_PATH = os.path.join(ROOT_PATH, "model/adapter")
 
 PER_DEVICE_TRAIN_BATCH_SIZE = 4
 EVAL_STEPS = 1000
-SAVE_STEPS = 1000
-LOGGING_STEPS = 200
+SAVE_STEPS = 5
+LOGGING_STEPS = 1
 EVALUATION_STRATEGY='steps'
-MAX_STEPS= 5000
+MAX_STEPS= 10
 NUM_TRAIN_EPOCHS = 1
 GRADIENT_ACCUMULATION_STEPS = 16
 GRADIENT_CKPT=True
 MAX_GRAD_NORM = 0.3
-LR_SCHEDULER_TYPE = 'cosine'
+LR_SCHEDULER_TYPE = 'cosine_with_restarts'
 WARMUP_STEPS = 1000
-
+LEARNING_RATE = 2E-4
 TRAIN_MODEL_PATH = '.'
 
 # MODELS_PARENT_PATH = "/home/ymLiu/model"
@@ -52,6 +62,13 @@ TRAIN_MODEL_PATH = '.'
 # MODEL_PATH = os.path.join(MODELS_PARENT_PATH, DEFAULT_FT_MODEL_NAME)
 # model configuration
 MODEL_PATH = "/home/ymLiu/model/CodeLlama-7b-Instruct"
+
+# predict sql cmd path
+PRED_PATH = os.path.join(ROOT_PATH, "pred")
+
+# merged model path
+MERGED_MODEL_PATH = os.path.join(ROOT_PATH, "model/merged_model")
+
 
 # training model path
 

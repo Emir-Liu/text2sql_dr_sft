@@ -24,32 +24,38 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 class ModelOperator():
 
-    def __init__(self):
+    def __init__(self, model_name_or_path = MODEL_PATH):
         self.model = None
         self.tokenizer = None
+        self.model_name_or_path = model_name_or_path
 
     def load_model_and_tokenizer(self):
         self.model = AutoModelForCausalLM.from_pretrained(
-            MODEL_PATH,
+            self.model_name_or_path,
             torch_dtype = torch.float16,
         )
         self.model.to(device)
-        self.tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH, trust_remote_code=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name_or_path, trust_remote_code=True)
         self.tokenizer.pad_token_id = 0
 
     def encode(self, content:str):
         input_ids = self.tokenizer.encode(content, return_tensors='pt').to(device)
-        print(f'input_ids:{input_ids}')
+        # print(f'input_ids:{input_ids}')
         return input_ids
 
     def decode(self, ids)->str:
-        content = self.tokenizer.decode(ids[0],skip_special_tokens=False)
+        content = self.tokenizer.decode(ids,skip_special_tokens=True)
         return content
 
     def generate(self, content:str):
         input_ids = self.encode(content)
+
+        prompt_len = len(input_ids[0])
+
         output_ids = self.model.generate(input_ids, pad_token_id = 0, max_length=1024)
-        output = self.decode(output_ids)
+
+        part_output_ids = output_ids.tolist()[0][prompt_len:]
+        output = self.decode(part_output_ids)
         return output
 
 class DatasetOperator():

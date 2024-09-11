@@ -20,15 +20,15 @@ from configs.config import DATA_PATH, SQL_DATA_INFO, INSTRUCTION_PROMPT, INPUT_P
 class ProcessSqlData:
     def __init__(
         self, 
+        dataset:str,
         train_file=None, 
         dev_file=None, 
-        # num_shot=0, 
-        # code_representation=False
+
     ) -> None:
         self.train_file = train_file
         self.dev_file = dev_file
-        # self.num_shot = num_shot
-        # self.code_representation = code_representation
+        self.dataset = dataset
+
 
     def decode_json_file(
         self,
@@ -228,52 +228,61 @@ class ProcessSqlData:
     def create_sft_raw_data(self):
         train_data = []
         dev_data = []
-        for data_info in SQL_DATA_INFO:
-            train_data_file_list = [
-                os.path.join(DATA_PATH, data_info["data_source"], file)
-                for file in data_info["train_file"]
-            ]
-            train_data.extend(
-                self.decode_json_file(
-                    data_file_list=train_data_file_list,
-                    table_file=os.path.join(
-                        DATA_PATH,
-                        data_info["data_source"],
-                        data_info["train_tables_file"],
-                    ),
-                    db_folder_path=os.path.join(
-                        DATA_PATH,
-                        data_info["data_source"],
-                        "database",
-                    ),
-                    db_id_name=data_info["db_id_name"],
-                    output_name=data_info["output_name"],
-                    is_multiple_turn=data_info["is_multiple_turn"],
-                )
-            )
+        # for data_info in SQL_DATA_INFO:
+        data_info = {}
+        for tmp_sql_data_info in SQL_DATA_INFO:
+            if tmp_sql_data_info['data_source'] == self.dataset:
+                data_info = tmp_sql_data_info
 
-            dev_data_file_list = [
-                os.path.join(DATA_PATH, data_info["data_source"], file)
-                for file in data_info["dev_file"]
-            ]
-            dev_data.extend(
-                self.decode_json_file(
-                    data_file_list=dev_data_file_list,
-                    table_file=os.path.join(
-                        DATA_PATH,
-                        data_info["data_source"],
-                        data_info["dev_tables_file"],
-                    ),
-                    db_folder_path=os.path.join(
-                        DATA_PATH,
-                        data_info["data_source"],
-                        "database",
-                    ),
-                    db_id_name=data_info["db_id_name"],
-                    output_name=data_info["output_name"],
-                    is_multiple_turn=data_info["is_multiple_turn"],
-                )
+        train_data_file_list = [
+            os.path.join(DATA_PATH, data_info["data_source"],data_info["data_source"], file)
+            for file in data_info["train_file"]
+        ]
+        train_data.extend(
+            self.decode_json_file(
+                data_file_list=train_data_file_list,
+                table_file=os.path.join(
+                    DATA_PATH,
+                    data_info["data_source"],
+                    data_info["data_source"],
+                    data_info["train_tables_file"],
+                ),
+                db_folder_path=os.path.join(
+                    DATA_PATH,
+                    data_info["data_source"],
+                    data_info["data_source"],
+                    "database",
+                ),
+                db_id_name=data_info["db_id_name"],
+                output_name=data_info["output_name"],
+                is_multiple_turn=data_info["is_multiple_turn"],
             )
+        )
+
+        dev_data_file_list = [
+            os.path.join(DATA_PATH, data_info["data_source"],data_info["data_source"], file)
+            for file in data_info["dev_file"]
+        ]
+        dev_data.extend(
+            self.decode_json_file(
+                data_file_list=dev_data_file_list,
+                table_file=os.path.join(
+                    DATA_PATH,
+                    data_info["data_source"],
+                    data_info["data_source"],
+                    data_info["dev_tables_file"],
+                ),
+                db_folder_path=os.path.join(
+                    DATA_PATH,
+                    data_info["data_source"],
+                    data_info["data_source"],
+                    "database",
+                ),
+                db_id_name=data_info["db_id_name"],
+                output_name=data_info["output_name"],
+                is_multiple_turn=data_info["is_multiple_turn"],
+            )
+        )
         with open(self.train_file, "w", encoding="utf-8") as s:
             json.dump(train_data, s, indent=4, ensure_ascii=False)
         with open(self.dev_file, "w", encoding="utf-8") as s:
@@ -281,31 +290,20 @@ class ProcessSqlData:
 
 
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument(
-    #     "--code_representation", help="Enable code representation", default=False
-    # )
-    # args = parser.parse_args()
-    train_file = os.path.join(DATA_PATH, "text2sql_train.json")
-    dev_file = os.path.join(DATA_PATH, "text2sql_dev.json")
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--dataset", help="dataset name", default=False
+    )
+    
+    args = parser.parse_args()
+    dataset_name = args.dataset
+
+    train_file = os.path.join(DATA_PATH, dataset_name, "text2sql_train.json")
+    dev_file = os.path.join(DATA_PATH, dataset_name, "text2sql_dev.json")
     precess = ProcessSqlData(
         train_file=train_file,
         dev_file=dev_file,
-        # code_representation=args.code_representation,
+        dataset = dataset_name
     )
     precess.create_sft_raw_data()
 
-    # # one-shot
-    # one_shot_all_in_one_train_file = os.path.join(
-    #     DATA_PATH, "example_text2sql_train_one_shot.json"
-    # )
-    # one_shot_all_in_one_dev_file = os.path.join(
-    #     DATA_PATH, "example_text2sql_dev_one_shot.json"
-    # )
-    # one_shot_precess = ProcessSqlData(
-    #     train_file=one_shot_all_in_one_train_file,
-    #     dev_file=one_shot_all_in_one_dev_file,
-    #     num_shot=1,
-    #     code_representation=args.code_representation,
-    # )
-    # one_shot_precess.create_sft_raw_data()
