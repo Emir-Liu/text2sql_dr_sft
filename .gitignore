@@ -1,0 +1,10 @@
+**/__pycache__
+*.swp
+
+/data/*
+/pred/*
+/model/adapter/*
+/model/merged_model/*
+/model/training/*
+
+!**/.gitkeep
