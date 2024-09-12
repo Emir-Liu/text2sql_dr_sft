@@ -50,6 +50,8 @@ def inference(model_operator, dataset_loader):
         total_prompt = PART_PROMPT.format(INSTRUCTION_PROMPT.format(instructs), inputs)
         response = model_operator.generate(total_prompt)
         res_list.append(response)
+        # break
+    return res_list
 
 def predict_dataset(predict_file_name:str, base_model_name_or_path:str, adapter_name:str, dataset_name:str):
     # predict_path = './pred/model.sql'

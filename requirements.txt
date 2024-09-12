@@ -3,3 +3,6 @@ torch
 peft
 datasets
 trl
+sqlparse
+func_timeout
+nltk

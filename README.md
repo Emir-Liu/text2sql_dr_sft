@@ -6,8 +6,8 @@ train LLM model on text2sql task.
 # 1.dataset and model
 supported dataset:
 ```bash
-CSpider(ing)
-Spider(todo)
+CSpider(finished)
+Spider(finished)
 ...
 ```
 
