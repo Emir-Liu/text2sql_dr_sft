@@ -1,6 +1,6 @@
 **/__pycache__
 *.swp
-
+*.log
 /data/*
 /pred/*
 /model/adapter/*
