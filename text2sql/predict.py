@@ -48,7 +48,7 @@ def inference(model_operator, dataset_loader):
         inputs = item['input']
 
         total_prompt = PART_PROMPT.format(INSTRUCTION_PROMPT.format(instructs), inputs)
-        response = model_operator.generate(total_prompt)
+        response = model_operator.generate(total_prompt, temperature=0)
         res_list.append(response)
         # break
     return res_list

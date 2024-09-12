@@ -12,7 +12,7 @@ from trl import SFTTrainer
 from text2sql.model_operator import ModelOperator, DatasetOperator
 # from text2sql.training_config import peft_config, training_arguments
 from text2sql.training_config import get_lora_and_train_config
-from configs.config import DATA_PATH, TRAIN_MODEL_PATH
+from configs.config import DATA_PATH, ADAPTER_PATH
 
 
 if __name__ == '__main__':
@@ -44,8 +44,8 @@ if __name__ == '__main__':
 
     train_dataset_loader = DatasetOperator().load_and_get_dataset_loader(train_file)
     dev_dataset_loader = DatasetOperator().load_and_get_dataset_loader(dev_file)
-
-    peft_config, training_arguments = get_lora_and_train_config(adapter_name=f'{base_model_part_name}_{dataset_name}_{time.strftime("%y%m%d_%H%M%S", time.localtime())}')
+    adapter_name=f'{base_model_part_name}_{dataset_name}_{time.strftime("%y%m%d_%H%M%S", time.localtime())}'
+    peft_config, training_arguments = get_lora_and_train_config(adapter_name)
     # a tokenizer with `padding_side` not equal to `right` to the SFTTrainer. 
     # This might lead to some unexpected behaviour due to overflow issues when training a model in half-precision. 
     # You might consider adding `tokenizer.padding_side = 'right'` to your code.
@@ -64,4 +64,4 @@ if __name__ == '__main__':
     trainer.train()
 
     # save model
-    trainer.model.save_pretrained(TRAIN_MODEL_PATH)
+    trainer.model.save_pretrained(os.path.join(ADAPTER_PATH, adapter_name),)
