@@ -1,6 +1,7 @@
 **/__pycache__
 *.swp
 *.log
+/incorrect.txt
 /data/*
 /pred/*
 /model/adapter/*

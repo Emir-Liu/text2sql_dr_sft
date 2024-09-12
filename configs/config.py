@@ -42,7 +42,7 @@ PART_PROMPT = """<s>[INST]<<SYS>>{}<</SYS>>{}[/INST]"""
 # training configuration
 ADAPTER_PATH = os.path.join(ROOT_PATH, "model/adapter")
 
-PER_DEVICE_TRAIN_BATCH_SIZE = 2
+PER_DEVICE_TRAIN_BATCH_SIZE = 1
 EVAL_STEPS = 500
 SAVE_STEPS = 500
 LOGGING_STEPS = 50

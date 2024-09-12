@@ -14,7 +14,9 @@ ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 print(f'ROOT_PATH:{ROOT_PATH}')
 sys.path.append(ROOT_PATH)
 
-from configs.config import PART_PROMPT, INSTRUCTION_PROMPT, DATA_PATH, PRED_PATH
+from peft import PeftModel
+
+from configs.config import PART_PROMPT, INSTRUCTION_PROMPT, DATA_PATH, PRED_PATH, ADAPTER_PATH
 from text2sql.model_operator import ModelOperator, DatasetOperator
 
 def predict_single(org_data:dict = None) -> str:
@@ -48,7 +50,7 @@ def inference(model_operator, dataset_loader):
         inputs = item['input']
 
         total_prompt = PART_PROMPT.format(INSTRUCTION_PROMPT.format(instructs), inputs)
-        response = model_operator.generate(total_prompt, temperature=0)
+        response = model_operator.generate(total_prompt)
         res_list.append(response)
         # break
     return res_list
@@ -64,6 +66,15 @@ def predict_dataset(predict_file_name:str, base_model_name_or_path:str, adapter_
     dev_file = os.path.join(DATA_PATH,dataset_name, "text2sql_dev.json")
 
     dev_dataset_loader = DatasetOperator().load_and_get_dataset_loader(dev_file)
+
+    if adapter_name:
+        lora_ckpt = os.path.join(ADAPTER_PATH, adapter_name)
+        print(f'lora_ckpt:{lora_ckpt}')
+
+        lora_model = PeftModel.from_pretrained(model_operator.model, lora_ckpt)
+
+        merge_model = lora_model.merge_and_unload()
+        model_operator.model = merge_model
 
     res = inference(model_operator, dev_dataset_loader)
 
