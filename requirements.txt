@@ -6,3 +6,4 @@ trl
 sqlparse
 func_timeout
 nltk
+vllm
