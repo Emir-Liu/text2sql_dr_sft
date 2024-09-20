@@ -9,3 +9,4 @@
 /model/training/*
 
 !**/.gitkeep
+*_incorrect.txt

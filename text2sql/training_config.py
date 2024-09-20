@@ -25,7 +25,7 @@ from configs.config import (
     LEARNING_RATE,
 )
 
-def get_lora_and_train_config(adapter_name:str=time.strftime("%y%m%d_%H%M%S", time.localtime())):
+def get_lora_and_train_config(adapter_name:str=time.strftime("%y%m%d_%H%M%S", time.localtime()),deepspeed_configuration=None, local_rank=0):
     # lora configuration
     peft_config = LoraConfig(
         r=64,
@@ -53,6 +53,9 @@ def get_lora_and_train_config(adapter_name:str=time.strftime("%y%m%d_%H%M%S", ti
         max_grad_norm =  MAX_GRAD_NORM,
         learning_rate = LEARNING_RATE,
         lr_scheduler_type = LR_SCHEDULER_TYPE,
+        deepspeed = deepspeed_configuration,
+        local_rank = local_rank,
+        # generation_config = None,
         # warmup_steps = WARMUP_STEPS,
         
     )

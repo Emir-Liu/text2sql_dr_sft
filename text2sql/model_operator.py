@@ -17,7 +17,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from datasets import Dataset
 
 
-from configs.config import MODEL_PATH, DATA_PATH, TOTAL_PROMPT
+from configs.config import MODEL_PATH, DATA_PATH, TOTAL_PROMPT, PART_PROMPT, ANS_PROMPT
 
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -77,6 +77,9 @@ class DatasetOperator():
         for tmp_data in data:
             tmp_data['text'] = TOTAL_PROMPT.format(tmp_data['instruction'], tmp_data['input'], tmp_data['output'])
             new_data.append(tmp_data)
+
+            tmp_data['question'] = PART_PROMPT.format(tmp_data['instruction'], tmp_data['input'])
+            tmp_data['ans'] = ANS_PROMPT.format(tmp_data['output'])
 
         return new_data
 

@@ -1,3 +1,5 @@
+"""Lora training with trl package
+"""
 import os
 import sys
 import argparse
@@ -7,6 +9,7 @@ ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 print(f'ROOT_PATH:{ROOT_PATH}')
 sys.path.append(ROOT_PATH)
 
+import deepspeed
 from trl import SFTTrainer
 
 from text2sql.model_operator import ModelOperator, DatasetOperator
@@ -23,9 +26,19 @@ if __name__ == '__main__':
     parser.add_argument(
         '--base_model_name_or_path', help="base model name or path", default=None
     )
+    parser.add_argument(
+        '--deepspeed', help='configuration file of deepspeed', default=None
+    )
+    parser.add_argument(
+        '--local_rank', help='deepspeed config', default=0
+    )
     args = parser.parse_args()
     dataset_name = args.dataset
     base_model = args.base_model_name_or_path
+
+    deepspeed_configuration = args.deepspeed
+    local_rank = args.local_rank
+        
 
     base_model_part_name = base_model.split('/')[-1]
 
@@ -45,7 +58,7 @@ if __name__ == '__main__':
     train_dataset_loader = DatasetOperator().load_and_get_dataset_loader(train_file)
     dev_dataset_loader = DatasetOperator().load_and_get_dataset_loader(dev_file)
     adapter_name=f'{base_model_part_name}_{dataset_name}_{time.strftime("%y%m%d_%H%M%S", time.localtime())}'
-    peft_config, training_arguments = get_lora_and_train_config(adapter_name)
+    peft_config, training_arguments = get_lora_and_train_config(adapter_name, deepspeed_configuration, local_rank)
     # a tokenizer with `padding_side` not equal to `right` to the SFTTrainer. 
     # This might lead to some unexpected behaviour due to overflow issues when training a model in half-precision. 
     # You might consider adding `tokenizer.padding_side = 'right'` to your code.

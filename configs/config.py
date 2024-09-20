@@ -39,6 +39,8 @@ TOTAL_PROMPT = """<s>[INST]<<SYS>>{}<</SYS>>{}[/INST]{} </s>"""
 
 PART_PROMPT = """<s>[INST]<<SYS>>{}<</SYS>>{}[/INST]"""
 
+ANS_PROMPT = """{} </s>"""
+
 # training configuration
 ADAPTER_PATH = os.path.join(ROOT_PATH, "model/adapter")
 
@@ -50,7 +52,7 @@ EVALUATION_STRATEGY='steps'
 # MAX_STEPS= 10
 NUM_TRAIN_EPOCHS = 8
 GRADIENT_ACCUMULATION_STEPS = 16
-GRADIENT_CKPT=True
+GRADIENT_CKPT=False
 MAX_GRAD_NORM = 0.3
 LR_SCHEDULER_TYPE = 'cosine_with_restarts'
 # WARMUP_STEPS = 1000
