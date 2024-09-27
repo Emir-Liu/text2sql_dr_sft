@@ -7,3 +7,6 @@ sqlparse
 func_timeout
 nltk
 vllm
+qianfan
+langchain_community
+langchain_openai
